@@ -1,5 +1,6 @@
 mod infrastructure;
 mod domain;
+mod application;
 use infrastructure::tracing::init_tracing;
 #[tokio::main]
 async fn main() {
