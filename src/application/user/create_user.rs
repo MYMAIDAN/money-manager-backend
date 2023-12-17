@@ -3,8 +3,10 @@ use axum::{
     routing::post
 };
 
+use super::dto::User;
 
-async fn create_user(Json(payload): Json()) {
-    
+
+pub async fn create_user(Json(payload): Json<User>) {
+    tracing::trace!("User has been registerd: {:?}", payload);        
 }
 
