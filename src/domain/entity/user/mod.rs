@@ -1,5 +1,6 @@
 use crate::domain::value_object::{ID, Name,Surname,Email,Password};
 
+#[derive(Debug)]
 pub struct User{
     id: ID,   
     name: Name,
@@ -33,5 +34,9 @@ impl User{
 
     pub fn email(&self) -> &Email{
         &self.email
+    }
+
+    pub fn password(&self) -> &Password{
+        &self.password
     }
 }
