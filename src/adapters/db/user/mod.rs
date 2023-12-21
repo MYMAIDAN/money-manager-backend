@@ -7,6 +7,7 @@ use async_trait::async_trait;
 use self::models::UserDaoModel;
 use tracing::{
     warn,
+    info,
     instrument
 };
 #[derive(Debug,Clone)]
@@ -37,7 +38,10 @@ impl UserRepository for UserRepositoryImpl{
             .execute(self.db_pool.as_ref()).await;
 
         match pg_query_result {
-            Ok(_) => Ok(()),
+            Ok(_) => {
+                info!("User {:?} has been created.", user_dao_model);
+                Ok(())
+            },
             Err(err) => {
                 warn!("Can create user {:?} with error from db {:?}", user_dao_model, err);
                 Err(CreateUserError::Connection)

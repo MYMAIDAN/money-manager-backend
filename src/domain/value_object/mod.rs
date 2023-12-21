@@ -8,3 +8,4 @@ pub use id::ID;
 pub use user_name::Name;
 pub use user_name::Surname;
 pub use password::Password;
+pub use password::PasswordError;
