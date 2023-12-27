@@ -24,6 +24,7 @@ impl App{
     pub async fn run(&self){
         dotenv().ok();
 
+        let cors = tower_http::cors::CorsLayer::permissive();
         let database_url = env::var("DATABASE_URL").expect("DATABASE_URL must be set");
         let pool = crate::adapters::db::establish_connection(database_url.as_str())
         .await.expect("Database connection is not establish");
@@ -36,6 +37,7 @@ impl App{
         let app = Router::new()
             .route("/", get(|| async { "Hello, World" }))
             .route("/register", post(create_user))
+            .layer(cors)
             .with_state(user_service);
 
         let listener = tokio::net::TcpListener::bind("0.0.0.0:4000").await.unwrap();

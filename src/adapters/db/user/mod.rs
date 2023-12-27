@@ -1,5 +1,5 @@
 mod models;
-use crate::application::user::repository::*;
+use crate::{application::user::repository::*, domain::value_object::Email};
 use sqlx::postgres::PgPool;
 use crate::domain::entity::user::User;
 use std::sync::Arc;
@@ -49,6 +49,10 @@ impl UserRepository for UserRepositoryImpl{
             
         }
         
+    }
+    
+    async fn get_by_email(&self, email: &Email) -> Result<User,GetUserError>{
+        todo!()
     }
 
     async fn get_by_id(&self, id: u64 ) -> Result<crate::domain::entity::user::User, GetUserError> {
