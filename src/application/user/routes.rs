@@ -6,7 +6,7 @@ use axum::{
 use axum::extract::State;
 use super::{service::UserService, errors::UserCreateError};
 
-use super::{dto::UserDTO, repository::UserRepository};
+use super::{dtos::UserDTO, repository::UserRepository};
 
 
 pub async fn create_user(

@@ -1,7 +1,6 @@
 mod infrastructure;
 mod domain;
 mod application;
-mod adapters;
 use infrastructure::tracing::init_tracing;
 
 

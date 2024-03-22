@@ -1,9 +1,11 @@
 use std::sync::Arc;
 use crate::domain::entity::user::User;
 use crate::domain::value_object::*;
-use super::repository::*;
-use super::dto::UserDTO;
-use super::errors::UserCreateError;
+use crate::application::dtos::UserDTO;
+use crate::application::repositories::UserRepository;
+use serde::Serialize;
+use thiserror::Error;
+use crate::domain::value_object::PasswordError;
 use uuid::{Uuid, Timestamp, NoContext};
 use std::marker::{Send,Sync};
 
@@ -33,4 +35,34 @@ impl UserService{
     }
     
     
+}
+
+#[derive(Error, Debug)]
+pub enum UserCreateError{
+    #[error("User already exist.")]
+    AlreadyExist,
+    #[error("Name is empty.")]
+    NameIsEmpty,
+    #[error("Surname is empty.")]
+    SurnameIsEmpty,
+    #[error("Password is incorect.")]
+    PasswordIncorect( PasswordError  )
+}
+
+impl From<PasswordError> for UserCreateError{
+    fn from(value: PasswordError) -> Self {
+        UserCreateError::PasswordIncorect(value)
+    }
+}
+
+#[derive(Serialize)]
+struct Error{
+    error_code: String,
+    message: String
+}
+
+impl Error{
+    fn new(code: &str, message: &str) -> Self{
+        Self { error_code: code.to_owned(), message: message.to_owned() }
+    }
 }

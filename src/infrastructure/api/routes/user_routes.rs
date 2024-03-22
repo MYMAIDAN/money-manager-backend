@@ -1,11 +1,22 @@
+use axum::{
+    extract::{Request,Json},
+    routing::post, http::{Response, StatusCode}, response::IntoResponse,
+};
+
+use axum::extract::State;
+use crate::application::services::{UserService, UserCreateError};
+
+use crate::application::dtos::UserDTO;
+use crate::application::repositories::UserRepository;
+use super::error::Error;
 
 
-impl Error{
-    fn new(code: &str, message: &str) -> Self{
-        Self { error_code: code.to_owned(), message: message.to_owned() }
+pub async fn create_user(
+    State(state): State<std::sync::Arc<UserService>>,
+    Json(payload): Json<UserDTO>) -> Result<StatusCode, UserCreateError> {
+        state.create_user(payload).await?;
+        Ok(StatusCode::CREATED)
     }
-}
-
 
 impl IntoResponse for UserCreateError{
     fn into_response(self) -> axum::response::Response {
@@ -19,3 +30,4 @@ impl IntoResponse for UserCreateError{
         (StatusCode::BAD_REQUEST, Json(body)).into_response()
     }
 }
+

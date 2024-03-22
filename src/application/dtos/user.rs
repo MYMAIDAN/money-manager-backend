@@ -7,3 +7,5 @@ pub struct UserDTO {
     pub email: String,
     pub password: String
 }
+
+

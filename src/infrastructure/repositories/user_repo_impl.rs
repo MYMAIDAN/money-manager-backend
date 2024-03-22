@@ -1,10 +1,10 @@
-mod models;
-use crate::{application::user::repository::*, domain::value_object::Email};
+use crate::domain::value_object::Email;
 use sqlx::postgres::PgPool;
 use crate::domain::entity::user::User;
 use std::sync::Arc;
 use async_trait::async_trait;
-use self::models::UserDaoModel;
+use super::dao::user_dao::UserDaoModel;
+use crate::application::repositories::{UserRepository,CreateUserError,GetUserError};
 use tracing::{
     warn,
     info,
