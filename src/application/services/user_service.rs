@@ -3,6 +3,7 @@ use crate::domain::entity::user::User;
 use crate::domain::value_object::*;
 use crate::application::dtos::UserDTO;
 use crate::application::repositories::UserRepository;
+use axum::Error;
 use serde::Serialize;
 use thiserror::Error;
 use crate::domain::value_object::PasswordError;
@@ -23,16 +24,26 @@ impl UserService{
     pub async fn create_user(&self, new_user: UserDTO ) -> Result<(), UserCreateError>{
 
         let password = Password::try_from(new_user.password)?;
-        let user = User::new(
-                    ID::from(Uuid::new_v7(Timestamp::now(NoContext))),
-                    Name::from(new_user.name),
-                    Surname::from(new_user.surname),
-                    Email::from(new_user.email),
-                    password
-       );
-       let create_user = self.repository.create_user(&user).await;
-       Ok(())
+        let email = Email::from(new_user.email.clone());
+        match  self.repository.get_by_email(&email).await {
+            Ok(_) => Err(UserCreateError::AlreadyExist),
+            Err(_) => {
+            let user = User::new(
+                        ID::from(Uuid::new_v7(Timestamp::now(NoContext))),
+                        Name::from(new_user.name),
+                        Surname::from(new_user.surname),
+                        Email::from(new_user.email),
+                        password
+                );
+        
+                let create_user = self.repository.create_user(&user).await;
+            
+                Ok(())
+            }
+
+        }
     }
+
     
     
 }
@@ -55,14 +66,3 @@ impl From<PasswordError> for UserCreateError{
     }
 }
 
-#[derive(Serialize)]
-struct Error{
-    error_code: String,
-    message: String
-}
-
-impl Error{
-    fn new(code: &str, message: &str) -> Self{
-        Self { error_code: code.to_owned(), message: message.to_owned() }
-    }
-}

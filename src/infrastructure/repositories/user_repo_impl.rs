@@ -1,5 +1,5 @@
 use crate::domain::value_object::Email;
-use sqlx::postgres::PgPool;
+use sqlx::{postgres::PgPool, Error};
 use crate::domain::entity::user::User;
 use std::sync::Arc;
 use async_trait::async_trait;
@@ -52,7 +52,25 @@ impl UserRepository for UserRepositoryImpl{
     }
     
     async fn get_by_email(&self, email: &Email) -> Result<User,GetUserError>{
-        todo!()
+        let res = sqlx::query_as!(
+            UserDaoModel,
+            "SELECT * FROM users 
+            WHERE email = $1",
+            email.to_string()
+        ).fetch_one(self.db_pool.as_ref()).await;
+
+        match res {
+            Ok(val) => Ok(val.into()),
+            Err(e) => 
+            match e {
+                Error::RowNotFound => Err(GetUserError::NotFound),
+                _ => Err(GetUserError::Connection)
+                
+            }
+        }
+
+            
+        
     }
 
     async fn get_by_id(&self, id: u64 ) -> Result<crate::domain::entity::user::User, GetUserError> {
