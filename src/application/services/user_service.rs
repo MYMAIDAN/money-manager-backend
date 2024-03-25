@@ -1,7 +1,7 @@
 use std::sync::Arc;
 use crate::domain::entity::user::User;
 use crate::domain::value_object::*;
-use crate::application::dtos::UserDTO;
+use crate::application::dtos::user::UserDTO;
 use crate::application::repositories::UserRepository;
 use axum::Error;
 use serde::Serialize;

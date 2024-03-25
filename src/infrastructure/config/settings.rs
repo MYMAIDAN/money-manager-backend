@@ -4,13 +4,13 @@ use config::{Config, ConfigBuilder, ConfigError, File};
 use serde::Deserialize;
 
 
-#[derive(Debug,Deserialize)]
+#[derive(Debug,Clone,Deserialize)]
 #[allow(unused)]
 pub struct Database{
     pub url: String
 }
 
-#[derive(Debug,Deserialize)]
+#[derive(Debug,Clone,Deserialize)]
 #[allow(unused)]
 pub struct Jwt{
     pub secret: String,
@@ -18,7 +18,7 @@ pub struct Jwt{
     pub maxage: usize
 }
 
-#[derive(Debug,Deserialize)]
+#[derive(Debug,Clone,Deserialize)]
 #[allow(unused)]
 pub struct Settings{
     pub debug: bool,

@@ -8,4 +8,7 @@ pub struct UserDTO {
     pub password: String
 }
 
+#[derive(Debug,Clone)]
+pub struct UserId(pub uuid::Uuid);
+
 

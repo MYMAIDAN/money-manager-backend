@@ -6,9 +6,9 @@ use axum::{
 use axum::extract::State;
 use crate::application::services::{UserService, UserCreateError};
 
-use crate::application::dtos::UserDTO;
+use crate::application::dtos::user::UserDTO;
 use crate::application::repositories::UserRepository;
-use super::error::Error;
+use crate::infrastructure::error::Error;
 
 
 pub async fn create_user(

@@ -3,6 +3,7 @@ pub(crate) mod repositories;
 pub(crate) mod api;
 pub(crate) mod middlewares;
 pub(crate) mod config;
+pub(crate) mod error;
 use config::Settings;
 use crate::application::services::UserService;
 use super::infrastructure::repositories::user_repo_impl::UserRepositoryImpl;
@@ -59,10 +60,23 @@ impl App{
             .route("/", get(|| async { "Hello, World" }))
             .route("/register", post(create_user))
             .layer(cors)
-            .with_state(user_service);
+            .with_state(user_service)
+            .with_state(AppState::new(self.setting.clone()));
 
         let listener = tokio::net::TcpListener::bind("0.0.0.0:4000").await.unwrap();
         axum::serve(listener, app).await;
+    }
+}
+
+
+#[derive(Debug,Clone)]
+pub struct AppState{
+    settings: Settings
+}
+
+impl AppState{
+    pub fn new(_settings: Settings) -> Self{
+        Self{settings: _settings}
     }
 }
 
