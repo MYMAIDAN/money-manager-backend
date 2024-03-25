@@ -1,0 +1,11 @@
+debug = true
+
+[database]
+url = "postgresql://demo_user:demo_pass@127.0.0.1:5432/money-manager-db"
+
+[jwt]
+secret = "secret"
+expired_in = 123134123
+maxage = 123122
+
+[redis]

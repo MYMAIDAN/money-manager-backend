@@ -1,6 +1,9 @@
 pub mod tracing;
 pub(crate) mod repositories;
 pub(crate) mod api;
+pub(crate) mod middlewares;
+pub(crate) mod config;
+use config::Settings;
 use crate::application::services::UserService;
 use super::infrastructure::repositories::user_repo_impl::UserRepositoryImpl;
 use crate::infrastructure::api::routes::user_routes::create_user;
@@ -15,11 +18,13 @@ use axum::{
     Router, extract::State, 
 };
 
-pub struct App{}
+pub struct App{
+    setting: Settings
+}
 
 impl App{
-    pub fn new() -> Self{
-        Self{}
+    pub fn new(_settings: Settings) -> Self{
+        Self{setting:_settings}     
     }
 }
 
@@ -42,8 +47,7 @@ impl App{
         dotenv().ok();
 
         let cors = tower_http::cors::CorsLayer::permissive();
-        let database_url = env::var("DATABASE_URL").expect("DATABASE_URL must be set");
-        let pool = establish_connection(database_url.as_str())
+        let pool = establish_connection(&self.setting.database.url)
         .await.expect("Database connection is not establish");
         run_migration(&pool).await;
 
