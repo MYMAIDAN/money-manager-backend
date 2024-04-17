@@ -4,8 +4,11 @@ pub(crate) mod api;
 pub(crate) mod middlewares;
 pub(crate) mod config;
 pub(crate) mod error;
+pub(crate) mod utils;
 use config::Settings;
 use crate::application::services::UserService;
+use self::utils::AppState;
+
 use super::infrastructure::repositories::user_repo_impl::UserRepositoryImpl;
 use crate::infrastructure::api::routes::user_routes::create_user;
 use dotenvy::dotenv;
@@ -55,13 +58,19 @@ impl App{
         let pool = Arc::new(pool);
         let user_repository = Arc::new(UserRepositoryImpl::new(pool));
         let user_service = Arc::new(UserService::new(user_repository));
+        let settings = self.setting.clone();
 
+        let app_state =  utils::AppState  {
+            user_service,
+            settings
+        };
+        
         let app = Router::new()
             .route("/", get(|| async { "Hello, World" }))
             .route("/register", post(create_user))
             .layer(cors)
-            .with_state(user_service)
-            .with_state(AppState::new(self.setting.clone()));
+            .with_state(app_state);
+            
 
         let listener = tokio::net::TcpListener::bind("0.0.0.0:4000").await.unwrap();
         axum::serve(listener, app).await;
@@ -69,16 +78,6 @@ impl App{
 }
 
 
-#[derive(Debug,Clone)]
-pub struct AppState{
-    settings: Settings
-}
-
-impl AppState{
-    pub fn new(_settings: Settings) -> Self{
-        Self{settings: _settings}
-    }
-}
 
 
 

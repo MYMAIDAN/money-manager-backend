@@ -1,9 +1,10 @@
 mod models;
+
 use axum::{body::Body, extract::{Request, State}, http::{header::AUTHORIZATION, StatusCode}, middleware::Next, response::IntoResponse, Json};
 use axum_extra::extract::CookieJar;
 use jsonwebtoken::{decode, DecodingKey, Validation};
 
-use crate::{application::dtos::user::UserId, infrastructure::{error::Error, AppState}};
+use crate::{application::dtos::user::UserId, domain::value_object::ID, infrastructure::{error::Error, AppState}};
 
 use self::models::TokenClaim;
 
@@ -55,6 +56,21 @@ pub async fn jwt_auth_middleware(
 
     req.extensions_mut().insert(UserId(user.clone()));
     Ok(next.run(req).await)
+
+
+}
+
+pub fn create_token(sub: ID) -> TokenClaim{
+    let now = chrono::Utc::now();
+    let iat = now.timestamp() as usize;
+    let exp = (now + chrono::Duration::hours(1)).timestamp() as usize;
+    TokenClaim{
+        iat: iat,
+        sub: sub.to_string(),
+        exp: exp
+    }
+
+
 
 
 }

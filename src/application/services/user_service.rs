@@ -1,4 +1,4 @@
-use std::sync::Arc;
+use std::{fmt::Debug, sync::Arc};
 use crate::domain::entity::user::User;
 use crate::domain::value_object::*;
 use crate::application::dtos::user::UserDTO;
@@ -10,9 +10,16 @@ use crate::domain::value_object::PasswordError;
 use uuid::{Uuid, Timestamp, NoContext};
 use std::marker::{Send,Sync};
 
-#[derive(Clone)]
+#[derive(Debug,Clone)]
 pub struct UserService{
     repository: Arc<dyn UserRepository + Send + Sync>
+}
+
+//TODO: Implement this
+impl std::fmt::Debug for dyn UserRepository + Send + Sync{
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        todo!()
+    }
 }
 
 
@@ -21,15 +28,16 @@ impl UserService{
         Self { repository: repository.clone() }
     }
 
-    pub async fn create_user(&self, new_user: UserDTO ) -> Result<(), UserCreateError>{
+    pub async fn create_user(&self, new_user: UserDTO ) -> Result<ID, UserCreateError>{
 
         let password = Password::try_from(new_user.password)?;
         let email = Email::from(new_user.email.clone());
         match  self.repository.get_by_email(&email).await {
             Ok(_) => Err(UserCreateError::AlreadyExist),
             Err(_) => {
+            let new_user_id = ID::from(Uuid::new_v7(Timestamp::now(NoContext)));
             let user = User::new(
-                        ID::from(Uuid::new_v7(Timestamp::now(NoContext))),
+                        new_user_id.clone(),
                         Name::from(new_user.name),
                         Surname::from(new_user.surname),
                         Email::from(new_user.email),
@@ -38,7 +46,7 @@ impl UserService{
         
                 let create_user = self.repository.create_user(&user).await;
             
-                Ok(())
+                Ok(new_user_id)
             }
 
         }

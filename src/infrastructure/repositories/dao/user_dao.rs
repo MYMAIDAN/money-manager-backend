@@ -1,4 +1,3 @@
-use serde::de::IntoDeserializer;
 use uuid::Uuid;
 
 use crate::domain::{self, entity::user::User, value_object::{Surname, ID}};

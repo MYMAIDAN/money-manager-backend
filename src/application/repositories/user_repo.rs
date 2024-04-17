@@ -1,3 +1,5 @@
+use core::fmt;
+
 use async_trait::async_trait;
 use thiserror::Error;
 use crate::domain::{entity::user::User, value_object::Email};
